@@ -1,0 +1,59 @@
+MODIFICATIONS — NOUVEL ARRIÈRE-PLAN
+===================================
+
+Date : 31 août 2026
+
+Objectif
+--------
+Moderniser et enrichir l’arrière-plan de l’application sans modifier la boîte
+principale du convertisseur, ses champs, ses boutons ou son fonctionnement.
+
+Modifications visuelles
+-----------------------
+1. Remplacement du fond statique par un décor multicouche comprenant :
+   - un dégradé général violet, blanc et menthe;
+   - une grille géométrique très légère;
+   - plusieurs halos colorés de type « aurora »;
+   - de petits points lumineux répartis dans l’espace;
+   - une texture de grain discrète pour ajouter de la profondeur.
+
+2. Ajout de trois halos animés :
+   - un grand halo violet dans la partie supérieure gauche;
+   - un halo turquoise dans la partie inférieure droite;
+   - une lumière orangée plus petite en haut à droite.
+
+3. Ajout de deux anneaux orbitaux décoratifs. Chaque anneau tourne lentement et
+   possède un point lumineux. Ils restent à l’extérieur du panneau principal.
+
+4. Les animations sont volontairement lentes pour conserver une interface calme
+   et lisible. Elles utilisent uniquement les transformations CSS afin de rester
+   fluides.
+
+Accessibilité et adaptation
+---------------------------
+1. Tous les éléments décoratifs sont masqués aux technologies d’assistance avec
+   aria-hidden, puisqu’ils ne transmettent aucune information utile.
+
+2. Les animations sont automatiquement désactivées lorsque l’utilisateur active
+   l’option système « réduire les animations » (prefers-reduced-motion).
+
+3. La grille et les éléments orbitaux sont adaptés sur les petits écrans afin de
+   ne pas distraire du convertisseur.
+
+4. Le contenu reste au premier plan grâce à une couche d’empilement dédiée. Le
+   contraste et le fonctionnement de la boîte d’application demeurent inchangés.
+
+Fichiers concernés
+------------------
+- frontend/src/App.jsx : ajout des éléments décoratifs autour du contenu.
+- frontend/src/main.jsx : chargement de la nouvelle feuille de styles.
+- frontend/src/styles.css : arrière-plan, animations et règles responsives.
+- MODIFICATIONS.txt : présent document.
+
+Éléments volontairement inchangés
+---------------------------------
+- La boîte principale du convertisseur.
+- Les catégories et les unités disponibles.
+- Les champs de saisie et les menus de sélection.
+- Le bouton de conversion et le panneau de résultat.
+- Les routes et les calculs du backend Node.js.

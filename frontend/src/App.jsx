@@ -85,8 +85,14 @@ export default function App() {
   const toUnit = category?.units.find((unit) => unit.id === to);
 
   return (
-    <Box sx={{ minHeight: '100vh', py: { xs: 4, md: 8 }, background: 'radial-gradient(circle at 15% 5%, #e2defe 0, transparent 30%), #f4f3fb' }}>
-      <Container maxWidth="md">
+    <Box className="app-background" sx={{ minHeight: '100vh', py: { xs: 4, md: 8 } }}>
+      <Box className="aurora aurora-one" aria-hidden="true" />
+      <Box className="aurora aurora-two" aria-hidden="true" />
+      <Box className="aurora aurora-three" aria-hidden="true" />
+      <Box className="orbital orbital-one" aria-hidden="true" />
+      <Box className="orbital orbital-two" aria-hidden="true" />
+      <Box className="noise-layer" aria-hidden="true" />
+      <Container maxWidth="md" sx={{ position: 'relative', zIndex: 1 }}>
         <Stack alignItems="center" spacing={1} mb={4} textAlign="center">
           <Box sx={{ width: 54, height: 54, borderRadius: 3, bgcolor: 'primary.main', color: 'white', display: 'grid', placeItems: 'center', boxShadow: '0 12px 28px #5b4ae844' }}>
             <StraightenRoundedIcon />
