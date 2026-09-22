@@ -1,0 +1,76 @@
+name: Tests et déploiement
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: production
+  cancel-in-progress: false
+
+jobs:
+  test-and-deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Récupérer le code
+        uses: actions/checkout@v4
+
+      - name: Installer Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            backend/package-lock.json
+            frontend/package-lock.json
+
+      - name: Installer les dépendances
+        run: |
+          npm ci
+          npm ci --prefix backend
+          npm ci --prefix frontend
+
+      - name: Exécuter les tests
+        run: npm test
+
+      - name: Compiler le frontend
+        run: npm run build
+
+      - name: Préparer SSH
+        env:
+          VM_SSH_KEY: ${{ secrets.VM_SSH_KEY }}
+          VM_HOST_KEY: ${{ secrets.VM_HOST_KEY }}
+        run: |
+          install -d -m 700 ~/.ssh
+          printf '%s\n' "$VM_SSH_KEY" > ~/.ssh/deploy_key
+          printf '%s\n' "$VM_HOST_KEY" > ~/.ssh/known_hosts
+          chmod 600 ~/.ssh/deploy_key ~/.ssh/known_hosts
+
+      - name: Déployer sur la VM
+        env:
+          VM_HOST: ${{ secrets.VM_HOST }}
+          VM_USER: ${{ secrets.VM_USER }}
+        run: |
+          ssh -i ~/.ssh/deploy_key "$VM_USER@$VM_HOST" '
+            set -eu
+            cd /var/www/emilmor
+            git pull --ff-only origin main
+            npm ci --prefix backend
+            npm ci --prefix frontend
+            npm test
+            npm run build
+            sudo systemctl restart emilmor
+            sudo systemctl reload nginx
+            curl --fail --silent --show-error http://127.0.0.1:3001/api/health
+          '
+
+      - name: Vérifier le site public
+        run: |
+          curl --fail --silent --show-error --retry 5 --retry-delay 2 https://emilmor.com/health

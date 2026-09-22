@@ -7,6 +7,20 @@ export const app = express();
 app.use(cors());
 app.use(express.json());
 
+app.use((request, response, next) => {
+  const startedAt = Date.now();
+  response.on('finish', () => {
+    console.log(JSON.stringify({
+      timestamp: new Date().toISOString(),
+      method: request.method,
+      path: request.originalUrl,
+      status: response.statusCode,
+      durationMs: Date.now() - startedAt
+    }));
+  });
+  next();
+});
+
 app.get('/api/health', (_request, response) => response.json({ status: 'ok' }));
 app.get('/api/categories', (_request, response) => response.json(publicCategories()));
 
