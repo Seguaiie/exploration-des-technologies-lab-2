@@ -68,7 +68,7 @@ jobs:
             npm run build
             sudo systemctl restart emilmor
             sudo systemctl reload nginx
-            curl --fail --silent --show-error http://127.0.0.1:3001/api/health
+            curl --fail --silent --show-error --retry 10 --retry-connrefused --retry-delay 1 http://127.0.0.1:3001/api/health
           '
 
       - name: Vérifier le site public
