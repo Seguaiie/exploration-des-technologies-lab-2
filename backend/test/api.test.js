@@ -27,6 +27,30 @@ test('retourne un état de santé positif', async () => {
   assert.deepEqual(await response.json(), { status: 'ok' });
 });
 
+test('sert le tableau de bord aux navigateurs sur les deux chemins de santé', async () => {
+  for (const path of ['/health', '/api/health']) {
+    const response = await fetch(`${baseUrl}${path}`, { headers: { Accept: 'text/html' } });
+    assert.equal(response.status, 200);
+    assert.match(response.headers.get('content-type'), /text\/html/);
+    assert.match(response.headers.get('cache-control'), /no-store/);
+    assert.match(response.headers.get('vary'), /Accept/);
+    assert.match(await response.text(), /État des services/);
+  }
+});
+
+test('conserve le JSON pour la supervision et le lien JSON du navigateur', async () => {
+  for (const [path, accept] of [
+    ['/health', '*/*'],
+    ['/api/health', 'application/json'],
+    ['/api/health', 'application/json, text/html;q=0.5'],
+    ['/api/health?format=json', 'text/html']
+  ]) {
+    const response = await fetch(`${baseUrl}${path}`, { headers: { Accept: accept } });
+    assert.equal(response.status, 200);
+    assert.deepEqual(await response.json(), { status: 'ok' });
+  }
+});
+
 test('retourne les catégories publiques', async () => {
   const response = await fetch(`${baseUrl}/api/categories`);
   const categories = await response.json();

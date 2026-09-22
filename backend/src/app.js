@@ -1,5 +1,6 @@
 import cors from 'cors';
 import express from 'express';
+import { fileURLToPath } from 'node:url';
 import { convert, publicCategories } from './conversions.js';
 
 export const app = express();
@@ -21,7 +22,14 @@ app.use((request, response, next) => {
   next();
 });
 
-app.get('/api/health', (_request, response) => response.json({ status: 'ok' }));
+app.get(['/health', '/api/health'], (request, response) => {
+  response.set('Cache-Control', 'no-store');
+  response.vary('Accept');
+  if (request.query.format !== 'json' && request.get('Accept')?.includes('text/html') && request.accepts(['html', 'json']) === 'html') {
+    return response.sendFile(fileURLToPath(new URL('./health.html', import.meta.url)));
+  }
+  response.json({ status: 'ok' });
+});
 app.get('/api/categories', (_request, response) => response.json(publicCategories()));
 
 app.post('/api/convert', (request, response) => {

@@ -169,6 +169,9 @@ export default function App() {
         <Typography textAlign="center" color="text.secondary" variant="caption" display="block" mt={3}>
           Les gallons US et impériaux sont distingués pour éviter toute ambiguïté.
         </Typography>
+        <Box textAlign="center" mt={1}>
+          <Button component="a" href="/health" size="small">État des services ↗</Button>
+        </Box>
       </Container>
     </Box>
   );

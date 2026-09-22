@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#f4f3fb">
+<title>État des services · Convertisseur</title>
+<style>
+:root{font-family:Inter,system-ui,-apple-system,sans-serif;color:#27233d;background:#f4f3fb;font-synthesis:none}*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 0 0,#ded7ff99,transparent 55%),radial-gradient(ellipse at 100% 90%,#ccf5e899,transparent 50%);min-height:100vh}main{max-width:1060px;margin:auto;padding:40px 24px}a{color:#5946d4;text-decoration:none}a:hover{text-decoration:underline}nav,.row{display:flex;align-items:center;justify-content:space-between;gap:16px}nav{font-size:14px;margin-bottom:56px}.brand{font-weight:750;color:#27233d;display:flex;align-items:center;gap:10px}.logo{background:#5b4ae8;color:white;border-radius:12px;padding:8px 12px;font-size:22px}.eyebrow{font-size:12px;letter-spacing:.13em;text-transform:uppercase;font-weight:750;color:#6e6398}h1{font-size:clamp(32px,5vw,48px);letter-spacing:-.045em;line-height:1.15;margin:12px 0}p{color:#716b82;line-height:1.6}button{font:inherit;font-size:14px;font-weight:650;border:1px solid #dcd6ef;background:white;border-radius:12px;padding:12px 18px;color:#5140bd;cursor:pointer}button:hover{background:#f2efff}button:disabled{cursor:wait;opacity:.6}a:focus-visible,button:focus-visible{outline:3px solid #7867f1;outline-offset:4px}.panel{background:#ffffffdb;border:1px solid #e4dfef;border-radius:20px;padding:26px;box-shadow:0 12px 40px #2e205b05}.hero{margin-top:28px;display:flex;align-items:center;gap:22px;background:#f4f2ff}.indicator{flex-shrink:0;width:60px;height:60px;border-radius:50%;display:grid;place-items:center;background:#e5dfff;color:#6652c7;font-size:28px}.hero[data-state="ok"]{background:#f0faf6;border-color:#cce8dd}.hero[data-state="ok"] .indicator{background:#d5f0e3;color:#16714e}.hero[data-state="error"]{background:#fff4ef;border-color:#f2d4c5}.hero[data-state="error"] .indicator{background:#fce1d3;color:#a63b17}h2{font-size:20px;letter-spacing:-.02em;margin:0 0 6px}.hero p{margin:0;font-size:14px}.metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:20px 0}.label{font-size:13px;color:#716b82}.value{font-size:28px;font-weight:750;margin:12px 0 4px;letter-spacing:-.04em}.hint{font-size:12px;color:#716b82}.services{margin-bottom:20px}.service{padding:22px 0;border-top:1px solid #eeebf4;display:grid;grid-template-columns:1fr auto;align-items:center;gap:16px}.service:first-of-type{margin-top:20px}.service:last-child{padding-bottom:0}.service strong{font-size:15px}.service p{font-size:13px;margin:6px 0 0}.badge{font-size:12px;font-weight:700;border-radius:99px;padding:7px 12px;background:#f0edf7;color:#726989;white-space:nowrap}.badge[data-state="ok"]{background:#e4f5ed;color:#196844}.badge[data-state="error"]{background:#fff0e9;color:#a13d19}.history{display:flex;gap:5px;margin:24px 0 12px;height:48px}.bar{flex:1;border-radius:4px;background:#efecf5;min-width:0}.bar[data-state="ok"]{background:#38a77b}.bar[data-state="error"]{background:#df7954}footer{margin:24px 0;font-size:12px;color:#716b82}footer a{font-size:12px}noscript{display:block;padding:20px;background:#fff0e9} @media(max-width:600px){main{padding:24px 16px}nav{margin-bottom:36px}.heading{align-items:flex-start;flex-direction:column}.metrics{grid-template-columns:1fr}.metrics .panel{display:flex;justify-content:space-between;align-items:center;gap:16px}.value{margin:0;font-size:24px}.metrics .hint{display:none}.panel{padding:20px}.hero{gap:14px}.indicator{width:42px;height:42px;font-size:22px}.service{gap:8px}.badge{padding:6px 9px}footer.row{align-items:flex-start;flex-direction:column}}
+</style>
+</head>
+<body>
+<main>
+<nav aria-label="Navigation"><a class="brand" href="/"><span class="logo" aria-hidden="true">↔</span> Convertisseur</a><a href="/">Retour à l’application ↗</a></nav>
+<header class="row heading"><div><div class="eyebrow">Observabilité · en direct</div><h1>État des services</h1><p>Un coup d’œil sur le bon fonctionnement du convertisseur.</p></div><button id="refresh" type="button">↻ Actualiser</button></header>
+<noscript>Activez JavaScript pour effectuer les vérifications en direct. Le statut JSON reste disponible sur /api/health.</noscript>
+<section class="panel hero" id="summary" data-state="pending" aria-live="polite" aria-atomic="true"><div class="indicator" id="symbol" aria-hidden="true">…</div><div><h2 id="status">Vérification en cours</h2><p id="description">Connexion aux services de l’application…</p></div></section>
+<div class="metrics"><div class="panel"><div class="label">Temps de réponse de l’API</div><div class="value" id="latency">—</div><div class="hint">Aller-retour depuis votre navigateur</div></div><div class="panel"><div class="label">Vérifications réussies</div><div class="value" id="success">—</div><div class="hint">Sur les 30 derniers contrôles de cette session</div></div><div class="panel"><div class="label">Dernière vérification</div><div class="value" id="checked">—</div><div class="hint">Heure locale de votre navigateur</div></div></div>
+<section class="panel services"><h2>Les services, en détail</h2><p class="label">Trois contrôles réels à chaque actualisation.</p><div class="service"><div><strong>API du convertisseur</strong><p>Le serveur répond et confirme son état de santé.</p></div><span class="badge" id="api">En attente</span></div><div class="service"><div><strong>Catalogue des unités</strong><p>Les catégories et leurs unités sont accessibles.</p></div><span class="badge" id="catalog">En attente</span></div><div class="service"><div><strong>Moteur de conversion</strong><p>Test fonctionnel : 10 pieds = 3,048 mètres.</p></div><span class="badge" id="conversion">En attente</span></div></section>
+<section class="panel"><div class="row"><h2>Historique de la session</h2><span class="hint">30 contrôles maximum</span></div><p class="label">Une barre par contrôle : vert si tout répond, orange si un contrôle échoue.</p><div class="history" id="history" role="img" aria-label="Aucun contrôle effectué"></div><div class="row hint"><span>Plus ancien</span><span>Plus récent</span></div></section>
+<footer class="row"><span>Actualisation toutes les 30 s · Historique effacé au rechargement.</span><a href="/api/health" id="json">Consulter le JSON ↗</a></footer>
+</main>
+<script>
+const byId = (id) => document.getElementById(id);
+const history = [];
+let running = false;
+const clock = new Intl.DateTimeFormat('fr-CA', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+async function probe(path, options, validate) {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 8000);
+  const start = performance.now();
+  try {
+    const response = await fetch(path, { ...options, headers: { Accept: 'application/json', ...options.headers }, cache: 'no-store', signal: controller.signal });
+    const data = await response.json();
+    if (!response.ok || !validate(data)) throw new Error('Réponse inattendue');
+    return { ok: true, ms: Math.round(performance.now() - start) };
+  } catch { return { ok: false }; }
+  finally { clearTimeout(timeout); }
+}
+function paintHistory() {
+  const container = byId('history');
+  container.replaceChildren();
+  for (let index = 0; index < 30; index++) {
+    const entry = history[index];
+    const bar = document.createElement('span');
+    bar.className = 'bar';
+    if (entry) {
+      bar.dataset.state = entry.ok ? 'ok' : 'error';
+      bar.title = `${clock.format(entry.at)} : ${entry.ok ? 'tous les contrôles réussis' : 'échec détecté'}`;
+    }
+    container.append(bar);
+  }
+  container.setAttribute('aria-label', history.map(entry => `${clock.format(entry.at)} : ${entry.ok ? 'opérationnel' : 'échec'}`).join('; '));
+}
+async function refresh() {
+  if (running) return;
+  running = true;
+  byId('refresh').disabled = true;
+  byId('refresh').textContent = 'Vérification…';
+  const results = await Promise.all([
+    probe('/api/health', {}, data => data.status === 'ok'),
+    probe('/api/categories', {}, data => Array.isArray(data) && data.length >= 3 && data.every(category => Array.isArray(category.units) && category.units.length >= 2)),
+    probe('/api/convert', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ category: 'length', value: 10, from: 'ft', to: 'm' }) }, data => typeof data.result === 'number' && Math.abs(data.result - 3.048) < 1e-9)
+  ]);
+  results.forEach((result, index) => {
+    const badge = byId(['api', 'catalog', 'conversion'][index]);
+    badge.dataset.state = result.ok ? 'ok' : 'error';
+    badge.textContent = result.ok ? 'Opérationnel' : 'Échec du contrôle';
+  });
+  const ok = results.every(result => result.ok);
+  const at = new Date();
+  history.push({ ok, at });
+  if (history.length > 30) history.shift();
+  byId('summary').dataset.state = ok ? 'ok' : 'error';
+  byId('symbol').textContent = ok ? '✓' : '!';
+  byId('status').textContent = ok ? 'Tous les services sont opérationnels' : 'Une anomalie a été détectée';
+  byId('description').textContent = ok ? 'L’API, le catalogue et les conversions répondent correctement.' : 'Au moins un contrôle a échoué. Le service ou votre connexion peut être en cause.';
+  byId('latency').textContent = results[0].ok ? `${results[0].ms} ms` : 'Indisponible';
+  byId('success').textContent = `${history.filter(entry => entry.ok).length} / ${history.length}`;
+  byId('checked').textContent = clock.format(at);
+  paintHistory();
+  running = false;
+  byId('refresh').disabled = false;
+  byId('refresh').textContent = '↻ Actualiser';
+}
+byId('refresh').addEventListener('click', refresh);
+byId('json').href = '/api/health?format=json';
+paintHistory();
+refresh();
+setInterval(refresh, 30000);
+</script>
+</body>
+</html>
